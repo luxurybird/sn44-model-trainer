@@ -54,9 +54,11 @@ def download_soccernet(
     logger.info(f"Splits: {splits}")
     logger.info(f"Target size: ~{target_size_gb} GB")
     
-    # Size estimates per game for SoccerNet v3 frames (approximate)
-    # SoccerNet v3 frames are ~150MB per game on average
+    # Size estimates for SoccerNet v3 (from official repo)
+    # Total: ~60GB for frames, ~1GB for labels across 400 games
+    # Per game: ~150MB for frames on average
     estimated_size_per_game = 0.15  # ~150MB per game for frames
+    total_games = 400  # SoccerNet v3 has 400 games total
     
     # Calculate max games to stay within target size
     if max_games_per_split is None:
@@ -85,17 +87,24 @@ def download_soccernet(
                     )
                     
                     # Count downloaded games and stop if limit reached
+                    # SoccerNet v3 structure: split/championship/season/game/
                     split_path = output_path / split
                     if split_path.exists():
-                        game_dirs = [d for d in split_path.iterdir() if d.is_dir()]
-                        if len(game_dirs) >= max_games_per_split:
-                            logger.info(f"Reached {len(game_dirs)} games for {split}, stopping")
-                            # Remove excess games if any
-                            if len(game_dirs) > max_games_per_split:
-                                for excess_dir in game_dirs[max_games_per_split:]:
-                                    import shutil
-                                    shutil.rmtree(excess_dir)
-                                    logger.info(f"Removed excess game: {excess_dir.name}")
+                        # Count games across all championships and seasons
+                        game_count = 0
+                        for champ_dir in split_path.iterdir():
+                            if not champ_dir.is_dir():
+                                continue
+                            for season_dir in champ_dir.iterdir():
+                                if not season_dir.is_dir():
+                                    continue
+                                for game_dir in season_dir.iterdir():
+                                    if game_dir.is_dir():
+                                        game_count += 1
+                        
+                        if game_count >= max_games_per_split:
+                            logger.info(f"Reached {game_count} games for {split}, stopping")
+                            # Note: Manual cleanup may be needed if exact count is critical
                     
                     # Check total size and stop if needed
                     current_size = sum(f.stat().st_size for f in output_path.rglob('*') if f.is_file()) / (1024**3)

@@ -153,9 +153,17 @@ python scripts/download_dataset.py \
 **Expected Download Size**: ~50-100GB (optimized for smaller dataset)
 **Download Time**: 2-4 hours depending on connection
 
+**Note**: SoccerNet v3 has 400 games total (~60GB for frames, ~1GB for labels). The download script limits the number of games to stay within your target size.
+
+**Dataset Structure** (from [SoccerNet-v3 GitHub](https://github.com/SoccerNet/SoccerNet-v3)):
+- `split/championship/season/game/Frames-v3.zip` - Zipped folder containing action and replay images
+- `split/championship/season/game/Labels-v3.json` - Annotations for each image
+- Action frames: `%d.png` (e.g., `7.png`)
+- Replay frames: `%d_%d.png` (e.g., `7_1.png`, `7_2.png`)
+
 ### Step 2: Preprocess Data
 
-The preprocessing script converts SoccerNet v3 frames to YOLO format (maintains 1280px quality):
+The preprocessing script extracts frames from `Frames-v3.zip` files and converts SoccerNet v3 annotations to YOLO format (maintains 1280px quality):
 
 ```bash
 # Process player detection data (default: every 10th frame, max 200 frames/game, 1280px)
