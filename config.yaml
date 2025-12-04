@@ -1,0 +1,101 @@
+# Training Configuration for Custom ScoreVision Models
+
+# General settings
+project: "custom-model-training"
+name: "scorevision-custom"
+seed: 42
+
+# Training parameters
+training:
+  epochs: 100
+  batch_size: 32
+  imgsz: 1280
+  device: 0  # GPU device ID, use 'cpu' for CPU training
+  workers: 8
+  patience: 50  # Early stopping patience
+  save_period: 10  # Save checkpoint every N epochs
+  
+# Optimization
+optimization:
+  optimizer: AdamW  # SGD, Adam, AdamW
+  lr: 0.001
+  weight_decay: 0.0005
+  momentum: 0.937
+  warmup_epochs: 3
+  warmup_momentum: 0.8
+  warmup_bias_lr: 0.1
+  
+# Data augmentation
+augmentation:
+  hsv_h: 0.015  # Image HSV-Hue augmentation
+  hsv_s: 0.7    # Image HSV-Saturation augmentation
+  hsv_v: 0.4    # Image HSV-Value augmentation
+  degrees: 0.0  # Image rotation (+/- deg)
+  translate: 0.1  # Image translation (+/- fraction)
+  scale: 0.5    # Image scale (+/- gain)
+  shear: 0.0    # Image shear (+/- deg)
+  perspective: 0.0  # Image perspective (+/- fraction)
+  flipud: 0.0   # Image flip up-down (probability)
+  fliplr: 0.5   # Image flip left-right (probability)
+  mosaic: 1.0   # Image mosaic (probability)
+  mixup: 0.0    # Image mixup (probability)
+  copy_paste: 0.0  # Segment copy-paste (probability)
+
+# Data splits
+data:
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  frame_sampling: 10  # Sample every Nth frame (optimized for smaller dataset)
+  max_frames_per_game: 200  # Limit frames per game
+  target_size: 1280  # Keep image size at 1280 (maintain quality)
+  
+# Model architecture
+model:
+  architecture: yolov8n  # yolov8n, yolov8s, yolov8m, yolov8l, yolov8x
+  pretrained: true
+  freeze: null  # Freeze layers: [0, 1, 2] or null
+  
+# Task-specific settings
+tasks:
+  player:
+    epochs: 100
+    batch_size: 32
+    classes: 4  # player, goalkeeper, referee, ball (for multi-class)
+    imgsz: 1280
+    
+  pitch:
+    epochs: 150
+    batch_size: 16
+    keypoints: 32  # Number of pitch keypoints
+    imgsz: 1280
+    
+  ball:
+    epochs: 100
+    batch_size: 64
+    classes: 1  # ball only
+    imgsz: 1280
+
+# Paths
+paths:
+  data_dir: "data"
+  raw_data_dir: "data/raw"
+  processed_data_dir: "data/processed"
+  models_dir: "models"
+  logs_dir: "logs"
+
+# SoccerNet v3 download settings (public, no NDA required)
+soccernet:
+  splits: ["train", "valid", "test"]
+  download_frames: true
+  download_annotations: true
+  target_size_gb: 80.0  # Target dataset size (reduced game count, not quality)
+  max_games_per_split: null  # Auto-calculate if null
+  image_size: 1280  # Keep image quality at 1280
+
+# Benchmark settings
+benchmark:
+  test_batch_size: 1
+  num_test_samples: 100
+  metrics: ["mAP", "precision", "recall", "fps", "latency"]
+
