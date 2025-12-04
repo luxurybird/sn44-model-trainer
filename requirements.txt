@@ -9,7 +9,7 @@ pyyaml>=6.0
 tqdm>=4.65.0
 
 # Dataset handling
-SoccerNet>=2.0.0
+SoccerNet>=0.1.62  # Latest available version (requires Python 3.8-3.11)
 huggingface-hub>=0.16.0
 
 # Data processing

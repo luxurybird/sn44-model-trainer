@@ -12,6 +12,28 @@ echo "Checking Python version..."
 python_version=$(python3 --version 2>&1 | awk '{print $2}')
 echo "Python version: $python_version"
 
+# Check if Python version is 3.8-3.11 (required by SoccerNet)
+python_major=$(echo $python_version | cut -d. -f1)
+python_minor=$(echo $python_version | cut -d. -f2)
+
+if [ "$python_major" != "3" ]; then
+    echo "ERROR: Python 3 is required"
+    exit 1
+fi
+
+if [ "$python_minor" -lt 8 ] || [ "$python_minor" -gt 11 ]; then
+    echo "WARNING: SoccerNet requires Python 3.8-3.11"
+    echo "Your version: $python_version"
+    echo "Consider using Python 3.11 for compatibility"
+    echo "Install with: sudo apt install python3.11 python3.11-venv"
+    echo ""
+    read -p "Continue anyway? (y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
+
 # Create virtual environment
 echo ""
 echo "Creating virtual environment..."
@@ -50,10 +72,13 @@ echo "=========================================="
 echo ""
 echo "Next steps:"
 echo "1. Activate virtual environment: source venv/bin/activate"
-echo "2. Sign SoccerNet NDA at https://www.soccer-net.org/data"
-echo "3. Download dataset: python scripts/download_dataset.py --output-dir data/raw"
-echo "4. Preprocess data: python scripts/preprocess_data.py --input-dir data/raw --output-dir data/processed/player --task player"
-echo "5. Train models: python scripts/train_player.py --data-dir data/processed/player"
+echo "2. Download dataset (SoccerNet v3 is public, no NDA required):"
+echo "   python scripts/download_dataset.py --output-dir data/raw"
+echo "3. Preprocess data:"
+echo "   python scripts/preprocess_data.py --input-dir data/raw --output-dir data/processed/player --task player"
+echo "4. Train models:"
+echo "   python scripts/train_player.py --data-dir data/processed/player"
 echo ""
 echo "See README.md for detailed instructions."
+echo "Note: SoccerNet requires Python 3.8-3.11. If issues, see TROUBLESHOOTING.md"
 

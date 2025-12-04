@@ -9,8 +9,25 @@ REM Check Python version
 echo Checking Python version...
 python --version
 if errorlevel 1 (
-    echo ERROR: Python not found. Please install Python 3.8 or higher.
+    echo ERROR: Python not found. Please install Python 3.8-3.11.
     exit /b 1
+)
+
+REM Check Python version is 3.8-3.11
+for /f "tokens=2 delims=. " %%a in ('python --version 2^>^&1') do set PYTHON_MAJOR=%%a
+for /f "tokens=3 delims=. " %%a in ('python --version 2^>^&1') do set PYTHON_MINOR=%%a
+
+if %PYTHON_MINOR% LSS 8 (
+    echo ERROR: Python 3.8 or higher is required. SoccerNet requires Python 3.8-3.11.
+    echo Please install Python 3.11 from https://www.python.org/downloads/
+    exit /b 1
+)
+
+if %PYTHON_MINOR% GTR 11 (
+    echo WARNING: SoccerNet requires Python 3.8-3.11
+    echo Your Python version may not be compatible.
+    echo Consider installing Python 3.11 from https://www.python.org/downloads/
+    pause
 )
 
 REM Create virtual environment
@@ -54,11 +71,14 @@ echo ==========================================
 echo.
 echo Next steps:
 echo 1. Activate virtual environment: venv\Scripts\activate
-echo 2. Sign SoccerNet NDA at https://www.soccer-net.org/data
-echo 3. Download dataset: python scripts\download_dataset.py --output-dir data\raw
-echo 4. Preprocess data: python scripts\preprocess_data.py --input-dir data\raw --output-dir data\processed\player --task player
-echo 5. Train models: python scripts\train_player.py --data-dir data\processed\player
+echo 2. Download dataset (SoccerNet v3 is public, no NDA required):
+echo    python scripts\download_dataset.py --output-dir data\raw
+echo 3. Preprocess data:
+echo    python scripts\preprocess_data.py --input-dir data\raw --output-dir data\processed\player --task player
+echo 4. Train models:
+echo    python scripts\train_player.py --data-dir data\processed\player
 echo.
 echo See README.md for detailed instructions.
+echo Note: SoccerNet requires Python 3.8-3.11. If issues, see TROUBLESHOOTING.md
 pause
 

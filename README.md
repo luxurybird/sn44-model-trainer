@@ -40,10 +40,12 @@ custom-model-training/
 
 1. **GPU**: NVIDIA GPU with CUDA support (RTX 5090 recommended)
 2. **Storage**: At least 100GB free space for dataset and models (optimized for 50-100GB dataset)
-3. **Python**: 3.8 or higher
+3. **Python**: 3.8 to 3.11 (required by SoccerNet package)
 4. **CUDA**: 11.8 or 12.x
 5. **SoccerNet v3**: Public dataset - no NDA or API keys required
 6. **Latest YOLO**: Uses Ultralytics 8.3.0+ for faster training
+
+**Note**: SoccerNet package requires Python 3.8-3.11. If you're using Python 3.12+, you'll need to use a virtual environment with Python 3.11 or use conda.
 
 ## Quick Start
 
@@ -54,9 +56,20 @@ custom-model-training/
 git clone <your-repo-url>
 cd custom-model-training
 
+# Create virtual environment with Python 3.11 (required by SoccerNet)
+# Check your Python version first:
+python --version  # Should be 3.8-3.11
+
+# If using Python 3.12+, use Python 3.11:
+# Ubuntu/Debian: sudo apt install python3.11 python3.11-venv
+# Then: python3.11 -m venv venv
+
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Upgrade pip
+pip install --upgrade pip
 
 # Install dependencies
 pip install -r requirements.txt
@@ -330,9 +343,10 @@ cp models/ball/best.pt ../sn44-base-miner/models/baseline/football-ball-detectio
 
 ### Dataset Download Issues
 
-- Verify SoccerNet NDA is signed
+- SoccerNet v3 is public - no NDA required
 - Check internet connection stability
-- Use `--resume` flag to resume interrupted downloads
+- Verify SoccerNet package is installed: `pip list | grep SoccerNet`
+- Check Python version is 3.8-3.11
 
 ### Low Accuracy
 
@@ -340,6 +354,37 @@ cp models/ball/best.pt ../sn44-base-miner/models/baseline/football-ball-detectio
 - Use data augmentation (enabled by default)
 - Try larger model architecture (yolov8m or yolov8l)
 - Check data quality in preprocessing step
+
+### Python Version Compatibility
+
+**Error**: `ERROR: No matching distribution found for SoccerNet>=2.0.0` or Python version conflicts
+
+**Solution**: SoccerNet package requires Python 3.8-3.11. If you're using Python 3.12+:
+
+1. **Option 1 - Use Python 3.11 virtual environment**:
+   ```bash
+   # Install Python 3.11 (if not installed)
+   # Ubuntu/Debian:
+   sudo apt install python3.11 python3.11-venv
+   
+   # Create virtual environment with Python 3.11
+   python3.11 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+2. **Option 2 - Use conda**:
+   ```bash
+   conda create -n scorevision python=3.11
+   conda activate scorevision
+   pip install -r requirements.txt
+   ```
+
+3. **Option 3 - Install compatible SoccerNet version**:
+   ```bash
+   # Install latest compatible version
+   pip install SoccerNet>=0.1.62
+   ```
 
 ## Advanced Usage
 

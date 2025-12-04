@@ -6,9 +6,11 @@ This is a condensed guide for getting started quickly. For detailed information,
 
 - GPU: NVIDIA GPU with CUDA (RTX 5090 recommended)
 - Storage: 100GB+ free space (optimized for 50-100GB dataset)
-- Python: 3.8+
+- Python: 3.8 to 3.11 (required by SoccerNet package)
 - SoccerNet v3: Public dataset - no NDA or API keys required
 - Latest YOLO: Uses Ultralytics 8.3.0+ for faster training
+
+**Important**: SoccerNet package requires Python 3.8-3.11. If using Python 3.12+, use a virtual environment with Python 3.11.
 
 ## Setup (5 minutes)
 
